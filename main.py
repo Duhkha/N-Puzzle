@@ -6,12 +6,15 @@ class Node:
 
     def manhattan_distance(self):
         print(self.grid)
+        # number of moves required to get to
 
-    def euclidean(self):
+    def linear_conflict(self):
         print(self.grid)
+        # Manhattan distance + 2*number of linear conflicts
 
-    def chebychev(self):
+    def hamming(self):
         print(self.grid)
+        # number of tiles out of place
 
     def read_puzzle(self, file):
         puzzle = []
