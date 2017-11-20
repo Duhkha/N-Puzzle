@@ -64,10 +64,11 @@ class Node:
             while j >= 0:
                 if self.grid[i][j] == 0:
                     x_pos = self.n - i
-            j += 1
-        i += 1
+                j -= 1
+            i -= 1
+
         if self.n % 2 == 1:
-            if inv_count % 2 == 0
+            if inv_count % 2 == 0:
                 solvable = True
         else:
             if x_pos % 2 == 0:
@@ -84,4 +85,6 @@ start = Node()
 end = Node()
 start.read_puzzle("puzzles/puzzle.txt")
 end.read_puzzle("puzzles/end.txt")
-start.is_solvable()
+if not start.is_solvable():
+     print("the puzzle is not solvable")
+     exit(1)
