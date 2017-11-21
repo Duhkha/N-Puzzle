@@ -2,14 +2,20 @@
 
 import re
 import argparse
+import math
 
 class Node:
     i = 0
     h = 0
     n = 0
+    up_h = 0
+    down_h = 0
+    left_h = 0
+    right_h = 0
+    heuristic = ""
     grid = []
 
-    def manhattan_distance(self):
+    def manhattan_distance(self, temp):
         print(self.grid)
         # number of moves required to get to
 
@@ -20,6 +26,18 @@ class Node:
     def hamming(self):
         print(self.grid)
         # number of tiles out of place
+
+    def up(self):
+        pass
+
+    def down(self):
+        pass
+
+    def left(self):
+        pass
+
+    def right(self):
+        pass
 
     def read_puzzle(self, file):
         puzzle = []
@@ -77,22 +95,34 @@ class Node:
         return solvable
 
 
+def solve(node, end):
+    i = 0
+    found = False
+    while i < node.n and not found:
+        j = 0
+        while j < node.n:
+            if node.grid[i][j] == 0:
+                found = True
+                print(i)
+                print(j)
+                break
+            if found:
+                break
+                print("test")
+            j += 1
+        i += i + 1
+    print(node.grid[i][j])
+
 parser = argparse.ArgumentParser(description='Choose the heuristic')
 parser.add_argument('-ham', action="store_true")
 parser.add_argument('-man', action="store_true")
 parser.add_argument('-linear', action="store_true")
 args = parser.parse_args()
 
-
-if args.ham:
-    print("ham")
-elif args.man:
-    print("man")
-elif args.linear:
-    print("linear")
-else:
+if not args.ham and not args.man and not args.linear:
     parser.print_help()
     exit(1)
+
 start = Node()
 end = Node()
 start.read_puzzle("puzzles/puzzle.txt")
@@ -102,6 +132,17 @@ if not start.is_solvable():
     exit(1)
 else:
     print("this puzzle is solvable")
-print(end.grid)
-print(start.grid)
+
+if args.ham:
+    start.heuristic = "ham"
+    solve(start, end.grid)
+elif args.man:
+    start.heuristic = "man"
+elif args.linear:
+    start.heuristic = "linear"
+
+
+
+
+
 
