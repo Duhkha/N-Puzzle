@@ -103,13 +103,10 @@ def solve(node, end):
         while j < node.n:
             if node.grid[i][j] == 0:
                 found = True
-                print(i)
-                print(j)
                 break
-            if found:
-                break
-                print("test")
             j += 1
+        if found:
+            break
         i += i + 1
     print(node.grid[i][j])
 
