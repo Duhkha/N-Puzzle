@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 
 import re
-
+import argparse
 
 class Node:
     i = 0
     h = 0
     n = 0
     grid = []
-    puzzle = []
 
     def manhattan_distance(self):
         print(self.grid)
@@ -24,6 +23,7 @@ class Node:
 
     def read_puzzle(self, file):
         puzzle = []
+        self.grid = []
         with open(file) as f:
             for line in f:
                 line = line.partition('#')[0]
@@ -46,7 +46,6 @@ class Node:
         for i in self.grid:
             for j in i:
                 temp.append(j)
-        print(temp)
         inv_count = 0
         i = 0
         while i < self.n * self.n - 1:
@@ -56,7 +55,6 @@ class Node:
                     inv_count += 1
                 j += 1
             i += 1
-        print(inv_count)
         x_pos = 0
         i = self.n - 1
         while i >= 0:
@@ -66,25 +64,44 @@ class Node:
                     x_pos = self.n - i
                 j -= 1
             i -= 1
-
         if self.n % 2 == 1:
             if inv_count % 2 == 0:
                 solvable = True
         else:
             if x_pos % 2 == 0:
                 if inv_count % 2 == 1:
-                    solvable = False
+                    solvable = True
             else:
                 if inv_count % 2 == 0:
                     solvable = True
         return solvable
 
 
+parser = argparse.ArgumentParser(description='Choose the heuristic')
+parser.add_argument('-ham', action="store_true")
+parser.add_argument('-man', action="store_true")
+parser.add_argument('-linear', action="store_true")
+args = parser.parse_args()
 
+
+if args.ham:
+    print("ham")
+elif args.man:
+    print("man")
+elif args.linear:
+    print("linear")
+else:
+    parser.print_help()
+    exit(1)
 start = Node()
 end = Node()
 start.read_puzzle("puzzles/puzzle.txt")
 end.read_puzzle("puzzles/end.txt")
 if not start.is_solvable():
-     print("the puzzle is not solvable")
-     exit(1)
+    print("the puzzle is not solvable")
+    exit(1)
+else:
+    print("this puzzle is solvable")
+print(end.grid)
+print(start.grid)
+
