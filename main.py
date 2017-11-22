@@ -21,13 +21,14 @@ class Node:
     def hamming(self):
         i = 0
         h = 0
-        while i < 4:
+        while i < self.n:
             j = 0
-            while j < 4:
-                if self[i][j] != self.grid[i][j]:
-                    h += h + 1
-                j += j + 1
-            i += i + 1
+            while j < self.n:
+                if self.grid[i][j] != 0 and self.end[i][j] != self.grid[i][j]:
+                    h += 1
+                j += 1
+            i += 1
+        print(h)
         return h
         # number of tiles out of place
 
@@ -97,8 +98,8 @@ class Node:
                 self.y0 += 1
             if found:
                 break
-            self.x0 += self.x0 + 1
-        if self.x0 > 3:
+            self.x0 += 1
+        if self.x0 < self.n:
             self.up()
         else:
             self.up_h = 9999
@@ -106,7 +107,7 @@ class Node:
             self.down()
         else:
             self.down_h = 9999
-        if self.y0 > 3:
+        if self.y0 > self.n:
             self.left()
         else:
             self.left_h = 9999
