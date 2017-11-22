@@ -28,7 +28,6 @@ class Node:
                     h += 1
                 j += 1
             i += 1
-        print(h)
         return h
         # number of tiles out of place
 
@@ -42,49 +41,61 @@ class Node:
         return 0
         # Manhattan distance + 2*number of linear conflicts
 
-    def up(self):
+    def up(self, move):
         tmp = self.grid
         tmp[self.x0][self.y0] = tmp[self.x0 + 1][self.y0]
         tmp[self.x0 + 1][self.y0] = 0
-        if self.heuristic == 0:
-            self.up_h = self.hamming()
-        elif self.heuristic == 1:
-            self.up_h = self.manhattan_distance()
+        if not move:
+            if self.heuristic == 0:
+                self.up_h = self.hamming()
+            elif self.heuristic == 1:
+                self.up_h = self.manhattan_distance()
+            else:
+                self.up_h = self.linear_conflict()
         else:
-            self.up_h = self.linear_conflict()
+            self.grid = tmp
 
-    def down(self):
+    def down(self, move):
         tmp = self.grid
         tmp[self.x0][self.y0] = tmp[self.x0 - 1][self.y0]
         tmp[self.x0 - 1][self.y0] = 0
-        if self.heuristic == 0:
-            self.down_h = self.hamming()
-        elif self.heuristic == 1:
-            self.down_h = self.manhattan_distance()
+        if not move:
+            if self.heuristic == 0:
+                self.down_h = self.hamming()
+            elif self.heuristic == 1:
+                self.down_h = self.manhattan_distance()
+            else:
+                self.down_h = self.linear_conflict()
         else:
-            self.down_h = self.linear_conflict()
+            self.grid = tmp
 
-    def left(self):
-        tmp = self.grid
-        tmp[self.x0][self.y0] = tmp[self.x0][self.y0 - 1]
-        tmp[self.x0][self.y0 - 1] = 0
-        if self.heuristic == 0:
-            self.down_h = self.hamming()
-        elif self.heuristic == 1:
-            self.down_h = self.manhattan_distance()
-        else:
-            self.down_h = self.linear_conflict()
-
-    def right(self):
+    def left(self, move):
         tmp = self.grid
         tmp[self.x0][self.y0] = tmp[self.x0][self.y0 + 1]
         tmp[self.x0][self.y0 + 1] = 0
-        if self.heuristic == 0:
-            self.down_h = self.hamming()
-        elif self.heuristic == 1:
-            self.down_h = self.manhattan_distance()
+        if not move:
+            if self.heuristic == 0:
+                self.left_h = self.hamming()
+            elif self.heuristic == 1:
+                self.left_h = self.manhattan_distance()
+            else:
+                self.left_h = self.linear_conflict()
         else:
-            self.down_h = self.linear_conflict()
+            self.grid = tmp
+
+    def right(self, move):
+        tmp = self.grid
+        tmp[self.x0][self.y0] = tmp[self.x0][self.y0 - 1]
+        tmp[self.x0][self.y0 - 1] = 0
+        if not move:
+            if self.heuristic == 0:
+                self.right_h = self.hamming()
+            elif self.heuristic == 1:
+                self.right_h = self.manhattan_distance()
+            else:
+                self.right_h = self.linear_conflict()
+        else:
+            self.grid = tmp
 
     def check_moves(self):
         self.x0 = 0
@@ -99,23 +110,25 @@ class Node:
             if found:
                 break
             self.x0 += 1
-        if self.x0 < self.n:
-            self.up()
+        if self.x0 < self.n - 1:
+            self.up(False)
         else:
             self.up_h = 9999
+
         if self.x0 > 0:
-            self.down()
+            self.down(False)
         else:
             self.down_h = 9999
-        if self.y0 > self.n:
-            self.left()
+
+        if self.y0 < self.n - 1:
+            self.left(False)
         else:
             self.left_h = 9999
+
         if self.y0 > 0:
-            self.down()
+            self.right(False)
         else:
-            self.down_h = 9999
-        pass
+            self.right_h = 9999
 
     def read_puzzle(self, file):
         puzzle = []
@@ -194,6 +207,34 @@ class Node:
 
 def solve(node):
     node.check_moves()
+    #    print(node.up_h)
+    # print(node.down_h)
+    # print(node.left_h)
+    # print(node.right_h)
+    if node.up_h <= node.down_h:
+        if node.up_h <= node.left_h:
+            if node.up_h <= node.right_h:
+                node.up(True)
+                print("UP")
+                return()
+    if node.down_h <= node.up_h:
+        if node.down_h <= node.left_h:
+            if node.down_h <= node.right_h:
+                node.down(True)
+                print("DOWN")
+                return()
+    if node.left_h <= node.up_h:
+        if node.left_h <= node.down_h:
+            if node.left_h <= node.right_h:
+                node.left(True)
+                print("LEFT")
+                return()
+    if node.right_h <= node.up_h:
+        if node.right_h <= node.down_h:
+            if node.right_h <= node.left_h:
+                node.right(True)
+                print("RIGHT")
+                return()
 
 
 parser = argparse.ArgumentParser(description='Choose the heuristic')
@@ -217,11 +258,25 @@ else:
 
 if args.ham:
     start.heuristic = 0
-    solve(start)
 elif args.man:
     start.heuristic = 1
 elif args.linear:
     start.heuristic = 2
+print(start.grid)
+solve(start)
+print(start.grid)
+solve(start)
+print(start.grid)
+solve(start)
+print(start.grid)
+solve(start)
+print(start.grid)
+solve(start)
+print(start.grid)
+solve(start)
+print(start.grid)
+
+
 
 
 
