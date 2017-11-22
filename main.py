@@ -2,41 +2,118 @@
 
 import re
 import argparse
-import math
+
 
 class Node:
     i = 0
     h = 0
     n = 0
+    x0 = 0
+    y0 = 0
     up_h = 0
     down_h = 0
     left_h = 0
     right_h = 0
-    heuristic = ""
+    heuristic = 0
     grid = []
+    end = []
 
-    def manhattan_distance(self, temp):
+    def hamming(self):
+        i = 0
+        h = 0
+        while i < 4:
+            j = 0
+            while j < 4:
+                if self[i][j] != self.grid[i][j]:
+                    h += h + 1
+                j += j + 1
+            i += i + 1
+        return h
+        # number of tiles out of place
+
+    def manhattan_distance(self):
         print(self.grid)
+        return 0
         # number of moves required to get to
 
     def linear_conflict(self):
         print(self.grid)
+        return 0
         # Manhattan distance + 2*number of linear conflicts
 
-    def hamming(self):
-        print(self.grid)
-        # number of tiles out of place
-
     def up(self):
-        pass
+        tmp = self.grid
+        tmp[self.x0][self.y0] = tmp[self.x0 + 1][self.y0]
+        tmp[self.x0 + 1][self.y0] = 0
+        if self.heuristic == 0:
+            self.up_h = self.hamming()
+        elif self.heuristic == 1:
+            self.up_h = self.manhattan_distance()
+        else:
+            self.up_h = self.linear_conflict()
 
     def down(self):
-        pass
+        tmp = self.grid
+        tmp[self.x0][self.y0] = tmp[self.x0 - 1][self.y0]
+        tmp[self.x0 - 1][self.y0] = 0
+        if self.heuristic == 0:
+            self.down_h = self.hamming()
+        elif self.heuristic == 1:
+            self.down_h = self.manhattan_distance()
+        else:
+            self.down_h = self.linear_conflict()
 
     def left(self):
-        pass
+        tmp = self.grid
+        tmp[self.x0][self.y0] = tmp[self.x0][self.y0 - 1]
+        tmp[self.x0][self.y0 - 1] = 0
+        if self.heuristic == 0:
+            self.down_h = self.hamming()
+        elif self.heuristic == 1:
+            self.down_h = self.manhattan_distance()
+        else:
+            self.down_h = self.linear_conflict()
 
     def right(self):
+        tmp = self.grid
+        tmp[self.x0][self.y0] = tmp[self.x0][self.y0 + 1]
+        tmp[self.x0][self.y0 + 1] = 0
+        if self.heuristic == 0:
+            self.down_h = self.hamming()
+        elif self.heuristic == 1:
+            self.down_h = self.manhattan_distance()
+        else:
+            self.down_h = self.linear_conflict()
+
+    def check_moves(self):
+        self.x0 = 0
+        found = False
+        while self.x0 < self.n and not found:
+            self.y0 = 0
+            while self.y0 < self.n:
+                if self.grid[self.x0][self.y0] == 0:
+                    found = True
+                    break
+                self.y0 += 1
+            if found:
+                break
+            self.x0 += self.x0 + 1
+        if self.x0 > 3:
+            self.up()
+        else:
+            self.up_h = 9999
+        if self.x0 > 0:
+            self.down()
+        else:
+            self.down_h = 9999
+        if self.y0 > 3:
+            self.left()
+        else:
+            self.left_h = 9999
+        if self.y0 > 0:
+            self.down()
+        else:
+            self.down_h = 9999
         pass
 
     def read_puzzle(self, file):
@@ -57,6 +134,25 @@ class Node:
         puzzle = [x.strip().split(' ') for x in puzzle]
         for x in puzzle:
             self.grid.append(map(int, x))
+
+    def read_end(self, file):
+        puzzle = []
+        self.end = []
+        with open(file) as f:
+            for line in f:
+                line = line.partition('#')[0]
+                line = line.rstrip()
+                line = line.lstrip()
+                line = re.sub(' +', ' ', line)
+                line.split(" ")
+                puzzle.append(line)
+        if puzzle[0] == '':
+            puzzle.pop(0)
+        self.n = int(puzzle[0])
+        puzzle.pop(0)
+        puzzle = [x.strip().split(' ') for x in puzzle]
+        for x in puzzle:
+            self.end.append(map(int, x))
 
     def is_solvable(self):
         temp = []
@@ -95,20 +191,9 @@ class Node:
         return solvable
 
 
-def solve(node, end):
-    i = 0
-    found = False
-    while i < node.n and not found:
-        j = 0
-        while j < node.n:
-            if node.grid[i][j] == 0:
-                found = True
-                break
-            j += 1
-        if found:
-            break
-        i += i + 1
-    print(node.grid[i][j])
+def solve(node):
+    node.check_moves()
+
 
 parser = argparse.ArgumentParser(description='Choose the heuristic')
 parser.add_argument('-ham', action="store_true")
@@ -121,9 +206,8 @@ if not args.ham and not args.man and not args.linear:
     exit(1)
 
 start = Node()
-end = Node()
 start.read_puzzle("puzzles/puzzle.txt")
-end.read_puzzle("puzzles/end.txt")
+start.read_end("puzzles/end.txt")
 if not start.is_solvable():
     print("the puzzle is not solvable")
     exit(1)
@@ -131,12 +215,12 @@ else:
     print("this puzzle is solvable")
 
 if args.ham:
-    start.heuristic = "ham"
-    solve(start, end.grid)
+    start.heuristic = 0
+    solve(start)
 elif args.man:
-    start.heuristic = "man"
+    start.heuristic = 1
 elif args.linear:
-    start.heuristic = "linear"
+    start.heuristic = 2
 
 
 
