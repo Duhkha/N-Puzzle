@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import sys
 import argparse
 import random
@@ -90,9 +88,9 @@ if __name__ == "__main__":
 	puzzle = make_puzzle(s, solvable=solv, iterations=args.iterations)
 
 	w = len(str(s*s))
-	print "# This puzzle is %s" % ("solvable" if solv else "unsolvable")
-	print "%d" % s
+	print("# This puzzle is %s" % ("solvable" if solv else "unsolvable"))
+	print("%d" % s)
 	for y in range(s):
 		for x in range(s):
-			print "%s" % (str(puzzle[x + y*s]).rjust(w)),
+			print("%s" % (str(puzzle[x + y*s]).rjust(w))),
 		print
