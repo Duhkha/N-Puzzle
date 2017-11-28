@@ -3,11 +3,14 @@ import re
 import argparse
 
 
-
 class Node:
 
     grid = []
     n = 0
+    h = 0
+    g = 0
+    f = 0
+    visited = False
 
 
 def read_puzzle(node, file):
@@ -41,7 +44,7 @@ def main():
     parser.add_argument('--file', '-f', type=str, required=False)
     parser.add_argument('--size', '-s', type=int, required=False)
     args = parser.parse_args()
-
+    end = []
     if not args.ham and not args.man and not args.linear:
         parser.print_help()
         exit(1)
@@ -55,11 +58,11 @@ def main():
     if args.file is not None:
         read_puzzle(start, args.file)
     else:
-        start.grid = gen(4)
-        print(start.grid)
-    end = Node()
-    read_puzzle(end, "puzzles/end.txt")
+        start.grid = gen(args.size)
     start.n = len(start.grid)
+    end = make_goal(start.n)
+    end = [end[i:i + start.n] for i in range(0, len(end), start.n)]
 
 
-main()
+if __name__ == '__main__':
+    main()

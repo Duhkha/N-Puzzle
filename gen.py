@@ -55,7 +55,6 @@ def make_goal(s):
         y += iy
         if cur == s*s:
             cur = 0
-
     return puzzle
 
 
